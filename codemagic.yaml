@@ -1,0 +1,31 @@
+# بناء التطبيق على Codemagic (بديل الماك لبناء نسخة الآيفون)
+# الاستخدام: ارفع المشروع على GitHub ← اربطه بـ codemagic.io ← شغّل الـ workflow
+# التوقيع والنشر على App Store / Google Play بيتظبطوا من إعدادات Codemagic لما الحسابات تجهز.
+workflows:
+  android:
+    name: Android APK + AAB
+    instance_type: linux_x2
+    environment:
+      flutter: stable
+    scripts:
+      - flutter pub get
+      - flutter test
+      - flutter build apk --release
+      - flutter build appbundle --release
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+      - build/app/outputs/bundle/release/*.aab
+
+  ios:
+    name: iOS (بدون توقيع - للتجربة)
+    instance_type: mac_mini_m2
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - flutter pub get
+      - cd ios && pod install
+      - flutter build ios --release --no-codesign
+    artifacts:
+      - build/ios/iphoneos/*.app
